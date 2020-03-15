@@ -1,0 +1,9 @@
+DESIGN
+
+Connect ground pin of Arduino with the ground pin of Relay Module, VCC pin on relay module with 5V on Arduino and finally pin 7 in Arduino with ln1 on relay module.
+
+
+WORKING
+
+When the server is available the arduino will read the request from the website through IP. 
+When the ON switch is enabled in the website through the connected ip then the command to enable the relay is given, which will turn on the bulb and else when the OFF switch is enabled then the relay will be turned off.ie, bulb is turned off. 
