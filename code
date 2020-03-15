@@ -1,0 +1,62 @@
+#include<ESP8266WiFi.h>;
+const char* SSID = "DD";
+const char* PASSWORD = "qwertzuiop";
+int relay = 5;
+WiFiServer server (80);
+void setup()
+{
+  Serial.begin(115200);
+pinMode(relay,OUTPUT);
+digitalWrite(relay,HIGH);
+Serial.println("wifi is connected");
+WiFi.begin(SSID,PASSWORD);
+while(WiFi.status()!=WL_CONNECTED)
+{
+  Serial.println("*");
+  delay(100);
+}
+Serial.println("\nSuccefully connrcted to"+String(SSID));
+server.begin();
+Serial.println("\ntype is active");
+Serial.println("Below ip adress can use to connect with server\n");
+Serial.println(WiFi.localIP());
+}
+void loop()
+{
+  WiFiClient client = server.available();
+  if(!client)
+  {
+    return;
+  }
+  String request = client.readStringUntil('\r');
+  client.flush();
+  int value = HIGH;
+  if(request.indexOf("\LAMP ON")!=-1)
+  {
+    digitalWrite(relay,LOW);
+    value = LOW;
+  }
+  if(request.indexOf("\LAMP OFF")!=-1)
+  {
+    digitalWrite(relay,HIGH);
+    value = HIGH;
+  }
+   client.println("HTTP/1.1 200 OK");
+  client.println("Content-Type: text/html");
+  client.println("");
+  client.println("<!DOCTYPE HTML>");
+  client.println("<html>");
+  client.println("<style> body {background-color:#B2D1D5;}</style>");
+  client.print("<center><h1>Table Lamp is now<h1></center>");
+  if(value == LOW)
+  {
+    client.print("<center><h1><b>ON</b></h1></center>");
+  } 
+  else 
+  {
+    client.print("<center><h1><b>OFF</b></h1></center>");
+  }
+  client.println("<br><a href=\"/LAMP=ON\"\"><center><button>Switch ON </button></center></a><br><br>");
+  client.println("<a href=\"/LAMP=OFF\"\"><center><button>Switch OFF </button></center></a><br/>");  
+  client.println("</html>");
+}
